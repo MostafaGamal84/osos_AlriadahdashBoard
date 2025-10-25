@@ -15,6 +15,9 @@ open Microsoft.Extensions.Configuration
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
+open Microsoft.AspNetCore.Authentication.Cookies
+open Microsoft.AspNetCore.Http
+open ososalriadahDashBoard.Services
 
 module Program =
     let exitCode = 0
@@ -27,8 +30,20 @@ module Program =
             .Services
             .AddControllersWithViews()
             .AddRazorRuntimeCompilation()
+            |> ignore
 
-        builder.Services.AddRazorPages()
+        builder.Services.AddRazorPages() |> ignore
+        builder.Services.AddScoped<IAuctionRepository, AuctionRepository>() |> ignore
+
+        builder.Services
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(fun options ->
+                options.LoginPath <- PathString("/Account/Login")
+                options.AccessDeniedPath <- PathString("/Account/Login")
+                options.SlidingExpiration <- true)
+            |> ignore
+
+        builder.Services.AddAuthorization() |> ignore
 
         let app = builder.Build()
 
@@ -40,6 +55,7 @@ module Program =
 
         app.UseStaticFiles()
         app.UseRouting()
+        app.UseAuthentication()
         app.UseAuthorization()
 
         app.MapControllerRoute(name = "default", pattern = "{controller=Home}/{action=Index}/{id?}")

@@ -1,0 +1,14 @@
+@model Auction
+@{
+    ViewData["Title"] = "Create Auction";
+}
+
+<h1>Create Auction</h1>
+
+<form asp-action="Create" method="post">
+    <partial name="_Form" model="Model" />
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
