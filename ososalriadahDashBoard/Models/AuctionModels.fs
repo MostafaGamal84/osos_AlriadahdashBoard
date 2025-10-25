@@ -3,7 +3,6 @@ namespace ososalriadahDashBoard.Models
 open System
 open System.ComponentModel.DataAnnotations
 
-[<CLIMutable>]
 type Auction() =
     [<Key>]
     member val Id : int = 0 with get, set
@@ -49,7 +48,6 @@ type Auction() =
     [<Url>]
     member val Url : string = null with get, set
 
-[<CLIMutable>]
 type LoginViewModel() =
     [<Required>]
     member val Username : string = null with get, set

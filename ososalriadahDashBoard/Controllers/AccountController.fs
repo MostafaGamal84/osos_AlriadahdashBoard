@@ -44,11 +44,11 @@ type AccountController (configuration : IConfiguration) =
                     .GetAwaiter()
                     .GetResult()
                 match model.ReturnUrl with
-                | returnUrl when not (string.IsNullOrEmpty(returnUrl)) && this.Url.IsLocalUrl(returnUrl) ->
+                | returnUrl when not (String.IsNullOrEmpty(returnUrl)) && this.Url.IsLocalUrl(returnUrl) ->
                     this.Redirect(returnUrl) :> IActionResult
                 | _ -> this.RedirectToAction("Index", "Auctions") :> IActionResult
             else
-                this.ModelState.AddModelError(string.Empty, "Invalid username or password.")
+                this.ModelState.AddModelError(String.Empty, "Invalid username or password.")
                 this.View(model) :> IActionResult
         else
             this.View(model) :> IActionResult
