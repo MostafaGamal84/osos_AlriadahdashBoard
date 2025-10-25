@@ -51,14 +51,15 @@ type AuctionRepository (configuration : IConfiguration) =
     interface IAuctionRepository with
         member _.GetAll () =
             use conn = createConnection ()
-            conn.Query<Auction>(
+            SqlMapper.Query<Auction>(
+                conn,
                 selectColumns + " WHERE ISNULL(IsDeleted, 0) = 0 ORDER BY Start DESC")
             |> Seq.toList
 
         member _.GetById (id : int) =
             use conn = createConnection ()
             let sql = selectColumns + " WHERE Id = @Id"
-            conn.QuerySingleOrDefault<Auction>(sql, dict [ "Id", box id ])
+            SqlMapper.QuerySingleOrDefault<Auction>(conn, sql, dict [ "Id", box id ])
             |> Option.ofObj
 
         member _.Add (auction : Auction) =
@@ -79,7 +80,7 @@ type AuctionRepository (configuration : IConfiguration) =
             parameters.Add("@District", toDbString auction.District)
             parameters.Add("@OpeningPrice", toDbNullable auction.OpeningPrice)
             parameters.Add("@Url", toDbString auction.Url)
-            conn.QuerySingle<int>(sql, parameters)
+            SqlMapper.QuerySingle<int>(conn, sql, parameters)
 
         member _.Update (auction : Auction) =
             use conn = createConnection ()
@@ -100,9 +101,9 @@ type AuctionRepository (configuration : IConfiguration) =
             parameters.Add("@District", toDbString auction.District)
             parameters.Add("@OpeningPrice", toDbNullable auction.OpeningPrice)
             parameters.Add("@Url", toDbString auction.Url)
-            conn.Execute(sql, parameters) |> ignore
+            SqlMapper.Execute(conn, sql, parameters) |> ignore
 
         member _.MarkDeleted (id : int) =
             use conn = createConnection ()
             let sql = "UPDATE Auctions SET IsDeleted = 1 WHERE Id = @Id"
-            conn.Execute(sql, dict [ "Id", box id ]) |> ignore
+            SqlMapper.Execute(conn, sql, dict [ "Id", box id ]) |> ignore
