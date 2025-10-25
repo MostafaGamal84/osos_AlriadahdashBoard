@@ -1,6 +1,7 @@
 namespace ososalriadahDashBoard.Services
 
 open System
+open System.Data
 open Microsoft.FSharp.Core
 open Dapper
 open Microsoft.Data.SqlClient
@@ -44,8 +45,8 @@ open SqlHelpers
 type AuctionRepository (configuration : IConfiguration) =
     let connectionString = configuration.GetConnectionString("DefaultConnection")
 
-    let createConnection () =
-        new SqlConnection(connectionString)
+    let createConnection () : IDbConnection =
+        new SqlConnection(connectionString) :> IDbConnection
 
     interface IAuctionRepository with
         member _.GetAll () =
