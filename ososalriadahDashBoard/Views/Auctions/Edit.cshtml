@@ -1,0 +1,15 @@
+@model Auction
+@{
+    ViewData["Title"] = "Edit Auction";
+}
+
+<h1>Edit Auction</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <partial name="_Form" model="Model" />
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
