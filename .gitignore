@@ -1,0 +1,76 @@
+# =========================
+# === Visual Studio / .NET
+# =========================
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build folders
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+[Ll]ogs/
+
+# Publish
+wwwroot/
+publish/
+dist/
+out/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Entity Framework Migrations temporary files
+*.dbmdl
+*.jfm
+Migrations/
+
+# Configuration files (optional, keep only if needed)
+appsettings.Development.json
+appsettings.Local.json
+
+# =========================
+# === Node / Angular
+# =========================
+node_modules/
+dist/
+temp/
+tmp/
+.cache/
+.angular/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# === OS generated files
+# =========================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+Icon?
+$RECYCLE.BIN/
+
+# =========================
+# === JetBrains / VSCode
+# =========================
+.idea/
+*.iml
+.vscode/
+
+# =========================
+# === Other
+# =========================
+*.log
+*.bak
+*.swp
+*.vsidx
+*.sqlite
+*.sqlite3
