@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ososalriadahDashBoard", "ososalriadahDashBoard\ososalriadahDashBoard.fsproj", "{943D1E32-C0E5-4595-B353-9DFC740E035E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{943D1E32-C0E5-4595-B353-9DFC740E035E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{943D1E32-C0E5-4595-B353-9DFC740E035E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{943D1E32-C0E5-4595-B353-9DFC740E035E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{943D1E32-C0E5-4595-B353-9DFC740E035E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0985649C-5937-415F-A23A-E98BCA8FB073}
+	EndGlobalSection
+EndGlobal
