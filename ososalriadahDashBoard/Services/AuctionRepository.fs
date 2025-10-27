@@ -5,7 +5,6 @@ open System.Data
 open Microsoft.Data.SqlClient
 open Dapper
 open Microsoft.FSharp.Core
-open Microsoft.Data.SqlClient
 open Dapper
 open Microsoft.Extensions.Configuration
 open ososalriadahDashBoard.Models
