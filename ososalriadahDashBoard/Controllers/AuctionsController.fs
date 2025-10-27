@@ -36,8 +36,10 @@ type AuctionsController (repository : IAuctionRepository, webHostEnvironment : I
         uploadsFolder
 
     member private this.SaveImage (auction : Auction) =
-        if not (isNull auction.ImageFile) && auction.ImageFile.Length > 0L then
-            try
+        try
+            if isNull auction.ImageFile || auction.ImageFile.Length <= 0L then
+                true
+            else
                 let uploadsFolder = this.EnsureUploadsFolder()
 
                 let extension = Path.GetExtension(auction.ImageFile.FileName)
@@ -50,11 +52,9 @@ type AuctionsController (repository : IAuctionRepository, webHostEnvironment : I
                 let relativePath = $"/uploads/{fileName}"
                 auction.ImagePath <- relativePath
                 true
-            with ex ->
-                this.ModelState.AddModelError("ImageFile", $"Could not save the selected image. {ex.Message}")
-                false
-        else
-            true
+        with ex ->
+            this.ModelState.AddModelError("ImageFile", $"Could not save the selected image. {ex.Message}")
+            false
 
     member this.Index () : IActionResult =
         let auctions = repository.GetAll()
