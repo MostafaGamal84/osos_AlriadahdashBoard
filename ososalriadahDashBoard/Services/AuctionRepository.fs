@@ -21,7 +21,7 @@ module private SqlHelpers =
     let toDbString (value : string) =
         if String.IsNullOrWhiteSpace(value) then box DBNull.Value else box value
 
-    let toDbNullable<'T when 'T : struct> (value : Nullable<'T>) =
+    let toDbNullable (value : Nullable<_>) =
         if value.HasValue then box value.Value else box DBNull.Value
 
     let selectColumns =
@@ -50,23 +50,29 @@ type AuctionRepository (configuration : IConfiguration) =
         new SqlConnection(connectionString) :> IDbConnection
 
     interface IAuctionRepository with
-        member _.GetAll () =
+        member _.GetAll () : Auction list =
             use conn = createConnection ()
             SqlMapper.Query<Auction>(
                 conn,
                 selectColumns + " WHERE ISNULL(IsDeleted, 0) = 0 ORDER BY Start DESC")
             |> Seq.toList
 
-        member _.GetById (id : int) =
+        member _.GetById (id : int) : Auction option =
             use conn = createConnection ()
             let sql = selectColumns + " WHERE Id = @Id"
-            SqlMapper.QuerySingleOrDefault<Auction>(conn, sql, dict [ "Id", box id ])
+            let parameters = DynamicParameters()
+            parameters.Add("@Id", id)
+            SqlMapper.QuerySingleOrDefault<Auction>(conn, sql, parameters)
             |> Option.ofObj
 
-        member _.Add (auction : Auction) =
+        member _.Add (auction : Auction) : int =
             use conn = createConnection ()
             let sql =
-                "INSERT INTO Auctions (Name, Start, [Content], ImagePath, PdfPath, IsDeleted, IsPermanentlyDeleted, [End], AgentName, City, District, OpeningPrice, Url)\n                 VALUES (@Name, @Start, @Content, @ImagePath, @PdfPath, @IsDeleted, @IsPermanentlyDeleted, @EndDate, @AgentName, @City, @District, @OpeningPrice, @Url);\n                 SELECT CAST(SCOPE_IDENTITY() as int);"
+                String.concat "\n" [
+                    "INSERT INTO Auctions (Name, Start, [Content], ImagePath, PdfPath, IsDeleted, IsPermanentlyDeleted, [End], AgentName, City, District, OpeningPrice, Url)"
+                    "VALUES (@Name, @Start, @Content, @ImagePath, @PdfPath, @IsDeleted, @IsPermanentlyDeleted, @EndDate, @AgentName, @City, @District, @OpeningPrice, @Url);"
+                    "SELECT CAST(SCOPE_IDENTITY() as int);"
+                ]
             let parameters = DynamicParameters()
             parameters.Add("@Name", auction.Name)
             parameters.Add("@Start", toDbNullable auction.Start)
@@ -83,10 +89,26 @@ type AuctionRepository (configuration : IConfiguration) =
             parameters.Add("@Url", toDbString auction.Url)
             SqlMapper.QuerySingle<int>(conn, sql, parameters)
 
-        member _.Update (auction : Auction) =
+        member _.Update (auction : Auction) : unit =
             use conn = createConnection ()
             let sql =
-                "UPDATE Auctions\n                    SET Name = @Name,\n                        Start = @Start,\n                        [Content] = @Content,\n                        ImagePath = @ImagePath,\n                        PdfPath = @PdfPath,\n                        IsDeleted = @IsDeleted,\n                        IsPermanentlyDeleted = @IsPermanentlyDeleted,\n                        [End] = @EndDate,\n                        AgentName = @AgentName,\n                        City = @City,\n                        District = @District,\n                        OpeningPrice = @OpeningPrice,\n                        Url = @Url\n                  WHERE Id = @Id"
+                String.concat "\n" [
+                    "UPDATE Auctions"
+                    "    SET Name = @Name,"
+                    "        Start = @Start,"
+                    "        [Content] = @Content,"
+                    "        ImagePath = @ImagePath,"
+                    "        PdfPath = @PdfPath,"
+                    "        IsDeleted = @IsDeleted,"
+                    "        IsPermanentlyDeleted = @IsPermanentlyDeleted,"
+                    "        [End] = @EndDate,"
+                    "        AgentName = @AgentName,"
+                    "        City = @City,"
+                    "        District = @District,"
+                    "        OpeningPrice = @OpeningPrice,"
+                    "        Url = @Url"
+                    "  WHERE Id = @Id"
+                ]
             let parameters = DynamicParameters()
             parameters.Add("@Id", auction.Id)
             parameters.Add("@Name", auction.Name)
@@ -104,7 +126,9 @@ type AuctionRepository (configuration : IConfiguration) =
             parameters.Add("@Url", toDbString auction.Url)
             SqlMapper.Execute(conn, sql, parameters) |> ignore
 
-        member _.MarkDeleted (id : int) =
+        member _.MarkDeleted (id : int) : unit =
             use conn = createConnection ()
             let sql = "UPDATE Auctions SET IsDeleted = 1 WHERE Id = @Id"
-            SqlMapper.Execute(conn, sql, dict [ "Id", box id ]) |> ignore
+            let parameters = DynamicParameters()
+            parameters.Add("@Id", id)
+            SqlMapper.Execute(conn, sql, parameters) |> ignore
