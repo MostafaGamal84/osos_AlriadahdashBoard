@@ -6,7 +6,7 @@ open System.ComponentModel.DataAnnotations.Schema
 open Microsoft.AspNetCore.Http
 
 module AuctionDefaults =
-    let DefaultImageUrl = "http://osuselriadah.somee.com/a3f57eb4-0f5c-40b0-871a-62adad80de4c.jpeg"
+    let DefaultImageUrl = "a3f57eb4-0f5c-40b0-871a-62adad80de4c.jpeg"
 
 type Auction() =
     [<Key>]
