@@ -20,7 +20,8 @@ type Auction() =
     [<Display(Name = "Details")>]
     member val Content : string = null with get, set
 
-    [<Display(Name = "Image Path")>]
+    [<Display(Name = "Image URL")>]
+    [<Url>]
     member val ImagePath : string = null with get, set
 
     [<NotMapped>]
