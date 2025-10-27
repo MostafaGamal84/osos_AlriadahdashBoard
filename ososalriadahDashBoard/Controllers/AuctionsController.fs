@@ -36,25 +36,33 @@ type AuctionsController (repository : IAuctionRepository, webHostEnvironment : I
         uploadsFolder
 
     member private this.SaveImage (auction : Auction) =
-        if not (isNull auction.ImageFile) && auction.ImageFile.Length > 0L then
+        let imageFile = auction.ImageFile
+
+        if isNull imageFile then
+            true
+        else
             try
-                let uploadsFolder = this.EnsureUploadsFolder()
+                use sourceStream = imageFile.OpenReadStream()
 
-                let extension = Path.GetExtension(auction.ImageFile.FileName)
-                let fileName = String.Concat(Guid.NewGuid().ToString("N"), extension)
-                let filePath = Path.Combine(uploadsFolder, fileName)
+                if sourceStream.CanSeek && sourceStream.Length <= 0L then
+                    true
+                else
+                    let uploadsFolder = this.EnsureUploadsFolder()
 
-                use stream = new FileStream(filePath, FileMode.Create)
-                auction.ImageFile.CopyTo(stream)
+                    let extension = Path.GetExtension(imageFile.FileName)
+                    let fileName = String.Concat(Guid.NewGuid().ToString("N"), extension)
+                    let filePath = Path.Combine(uploadsFolder, fileName)
 
-                let relativePath = $"/uploads/{fileName}"
-                auction.ImagePath <- relativePath
-                true
+                    use destinationStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None)
+                    sourceStream.CopyTo(destinationStream)
+                    destinationStream.Flush()
+
+                    let relativePath = $"/uploads/{fileName}"
+                    auction.ImagePath <- relativePath
+                    true
             with ex ->
                 this.ModelState.AddModelError("ImageFile", $"Could not save the selected image. {ex.Message}")
                 false
-        else
-            true
 
     member this.Index () : IActionResult =
         let auctions = repository.GetAll()
