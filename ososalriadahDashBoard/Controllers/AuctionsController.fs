@@ -42,7 +42,9 @@ type AuctionsController (repository : IAuctionRepository, webHostEnvironment : I
             true
         else
             try
-                if imageFile.Length <= 0L then
+                use sourceStream = imageFile.OpenReadStream()
+
+                if sourceStream.CanSeek && sourceStream.Length <= 0L then
                     true
                 else
                     let uploadsFolder = this.EnsureUploadsFolder()
@@ -51,8 +53,9 @@ type AuctionsController (repository : IAuctionRepository, webHostEnvironment : I
                     let fileName = String.Concat(Guid.NewGuid().ToString("N"), extension)
                     let filePath = Path.Combine(uploadsFolder, fileName)
 
-                    use stream = new FileStream(filePath, FileMode.Create)
-                    imageFile.CopyTo(stream)
+                    use destinationStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None)
+                    sourceStream.CopyTo(destinationStream)
+                    destinationStream.Flush()
 
                     let relativePath = $"/uploads/{fileName}"
                     auction.ImagePath <- relativePath
