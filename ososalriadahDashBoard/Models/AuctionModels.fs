@@ -2,6 +2,8 @@ namespace ososalriadahDashBoard.Models
 
 open System
 open System.ComponentModel.DataAnnotations
+open System.ComponentModel.DataAnnotations.Schema
+open Microsoft.AspNetCore.Http
 
 type Auction() =
     [<Key>]
@@ -20,6 +22,9 @@ type Auction() =
 
     [<Display(Name = "Image Path")>]
     member val ImagePath : string = null with get, set
+
+    [<NotMapped>]
+    member val ImageFile : IFormFile = null with get, set
 
     [<Display(Name = "PDF Path")>]
     member val PdfPath : string = null with get, set
