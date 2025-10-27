@@ -3,8 +3,6 @@ namespace ososalriadahDashBoard.Services
 open System
 open System.Data
 open Microsoft.FSharp.Core
-open Dapper
-open Microsoft.Data.SqlClient
 open Microsoft.Extensions.Configuration
 open ososalriadahDashBoard.Models
 
