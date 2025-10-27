@@ -36,25 +36,50 @@ type AuctionsController (repository : IAuctionRepository, webHostEnvironment : I
         uploadsFolder
 
     member private this.SaveImage (auction : Auction) =
-        if not (isNull auction.ImageFile) && auction.ImageFile.Length > 0L then
-            try
-                let uploadsFolder = this.EnsureUploadsFolder()
+        let imageFile = auction.ImageFile
 
-                let extension = Path.GetExtension(auction.ImageFile.FileName)
-                let fileName = String.Concat(Guid.NewGuid().ToString("N"), extension)
-                let filePath = Path.Combine(uploadsFolder, fileName)
-
-                use stream = new FileStream(filePath, FileMode.Create)
-                auction.ImageFile.CopyTo(stream)
-
-                let relativePath = $"/uploads/{fileName}"
-                auction.ImagePath <- relativePath
-                true
-            with ex ->
-                this.ModelState.AddModelError("ImageFile", $"Could not save the selected image. {ex.Message}")
-                false
-        else
+        if isNull imageFile then
             true
+        else
+            let hasContent =
+                try
+                    imageFile.Length > 0L
+                with
+                | :? NotSupportedException
+                | :? InvalidOperationException -> true
+
+            if not hasContent then
+                true
+            else
+                try
+                    let uploadsFolder = this.EnsureUploadsFolder()
+
+                    let extension =
+                        let ext = Path.GetExtension(imageFile.FileName)
+                        if String.IsNullOrWhiteSpace(ext) then "" else ext
+
+                    let fileName = String.Concat(Guid.NewGuid().ToString("N"), extension)
+                    let filePath = Path.Combine(uploadsFolder, fileName)
+
+                    use destinationStream =
+                        new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None)
+
+                    try
+                        imageFile.CopyTo(destinationStream)
+                    with ex ->
+                        // Reset the stream and retry through a buffered copy if the provider does not allow direct CopyTo
+                        destinationStream.SetLength(0L)
+                        use sourceStream = imageFile.OpenReadStream()
+                        sourceStream.CopyTo(destinationStream)
+
+                    destinationStream.Flush()
+
+                    let relativePath = $"/uploads/{fileName}"
+                    auction.ImagePath <- relativePath
+                    true
+                with ex ->
+                    this.ModelState.AddModelError("ImageFile", $"Could not save the selected image. {ex.Message}")
+                    false
 
     member this.Index () : IActionResult =
         let auctions = repository.GetAll()
