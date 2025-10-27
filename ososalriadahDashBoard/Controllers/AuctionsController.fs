@@ -36,9 +36,14 @@ type AuctionsController (repository : IAuctionRepository, webHostEnvironment : I
         uploadsFolder
 
     member private this.SaveImage (auction : Auction) =
+        let ensureDefaultImage () =
+            if String.IsNullOrWhiteSpace(auction.ImagePath) then
+                auction.ImagePath <- AuctionDefaults.DefaultImageUrl
+
         let imageFile = auction.ImageFile
 
         if isNull imageFile then
+            ensureDefaultImage()
             true
         else
             let hasContent =
@@ -49,6 +54,7 @@ type AuctionsController (repository : IAuctionRepository, webHostEnvironment : I
                 | :? InvalidOperationException -> true
 
             if not hasContent then
+                ensureDefaultImage()
                 true
             else
                 try
