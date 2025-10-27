@@ -12,10 +12,22 @@ open ososalriadahDashBoard.Services
 type AuctionsController (repository : IAuctionRepository, webHostEnvironment : IWebHostEnvironment) =
     inherit Controller()
 
+    member private this.EnsureUploadsFolder () =
+        let webRoot =
+            if String.IsNullOrWhiteSpace(webHostEnvironment.WebRootPath) then
+                let fallbackRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")
+                Directory.CreateDirectory(fallbackRoot) |> ignore
+                fallbackRoot
+            else
+                webHostEnvironment.WebRootPath
+
+        let uploadsFolder = Path.Combine(webRoot, "uploads")
+        Directory.CreateDirectory(uploadsFolder) |> ignore
+        uploadsFolder
+
     member private this.SaveImage (auction : Auction) =
         if not (isNull auction.ImageFile) && auction.ImageFile.Length > 0L then
-            let uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "uploads")
-            Directory.CreateDirectory(uploadsFolder) |> ignore
+            let uploadsFolder = this.EnsureUploadsFolder()
 
             let extension = Path.GetExtension(auction.ImageFile.FileName)
             let fileName = String.Concat(Guid.NewGuid().ToString("N"), extension)
@@ -24,7 +36,7 @@ type AuctionsController (repository : IAuctionRepository, webHostEnvironment : I
             use stream = new FileStream(filePath, FileMode.Create)
             auction.ImageFile.CopyTo(stream)
 
-            let relativePath = Path.Combine("uploads", fileName).Replace("\\", "/")
+            let relativePath = $"/uploads/{fileName}"
             auction.ImagePath <- relativePath
 
     member this.Index () : IActionResult =
