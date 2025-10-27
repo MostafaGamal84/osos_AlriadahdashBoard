@@ -5,6 +5,9 @@ open System.ComponentModel.DataAnnotations
 open System.ComponentModel.DataAnnotations.Schema
 open Microsoft.AspNetCore.Http
 
+module AuctionDefaults =
+    let DefaultImageUrl = "http://osuselriadah.somee.com/a3f57eb4-0f5c-40b0-871a-62adad80de4c.jpeg"
+
 type Auction() =
     [<Key>]
     member val Id : int = 0 with get, set
@@ -20,8 +23,9 @@ type Auction() =
     [<Display(Name = "Details")>]
     member val Content : string = null with get, set
 
-    [<Display(Name = "Image Path")>]
-    member val ImagePath : string = null with get, set
+    [<Display(Name = "Image URL")>]
+    [<Url>]
+    member val ImagePath : string = AuctionDefaults.DefaultImageUrl with get, set
 
     [<NotMapped>]
     member val ImageFile : IFormFile = null with get, set
