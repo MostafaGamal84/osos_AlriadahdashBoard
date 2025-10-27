@@ -27,9 +27,10 @@
         </div>
         <div class="row">
             <div class="col-md-6 mb-3">
-                <label asp-for="ImagePath" class="form-label"></label>
-                <input asp-for="ImagePath" class="form-control" />
-                <span asp-validation-for="ImagePath" class="text-danger"></span>
+                <label asp-for="ImageFile" class="form-label"></label>
+                <input asp-for="ImageFile" class="form-control" type="file" accept="image/*" />
+                <input type="hidden" asp-for="ImagePath" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
             <div class="col-md-6 mb-3">
                 <label asp-for="PdfPath" class="form-label"></label>
