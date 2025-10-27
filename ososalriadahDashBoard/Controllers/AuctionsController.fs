@@ -1,13 +1,31 @@
 namespace ososalriadahDashBoard.Controllers
 
+open System
+open System.IO
 open Microsoft.AspNetCore.Authorization
+open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Mvc
 open ososalriadahDashBoard.Models
 open ososalriadahDashBoard.Services
 
 [<Authorize>]
-type AuctionsController (repository : IAuctionRepository) =
+type AuctionsController (repository : IAuctionRepository, webHostEnvironment : IWebHostEnvironment) =
     inherit Controller()
+
+    member private this.SaveImage (auction : Auction) =
+        if not (isNull auction.ImageFile) && auction.ImageFile.Length > 0L then
+            let uploadsFolder = Path.Combine(webHostEnvironment.WebRootPath, "uploads")
+            Directory.CreateDirectory(uploadsFolder) |> ignore
+
+            let extension = Path.GetExtension(auction.ImageFile.FileName)
+            let fileName = String.Concat(Guid.NewGuid().ToString("N"), extension)
+            let filePath = Path.Combine(uploadsFolder, fileName)
+
+            use stream = new FileStream(filePath, FileMode.Create)
+            auction.ImageFile.CopyTo(stream)
+
+            let relativePath = Path.Combine("uploads", fileName).Replace("\\", "/")
+            auction.ImagePath <- relativePath
 
     member this.Index () : IActionResult =
         let auctions = repository.GetAll()
@@ -20,6 +38,7 @@ type AuctionsController (repository : IAuctionRepository) =
     [<ValidateAntiForgeryToken>]
     member this.Create (auction : Auction) =
         if this.ModelState.IsValid then
+            this.SaveImage(auction)
             repository.Add(auction) |> ignore
             this.TempData.["Success"] <- "Auction created successfully."
             this.RedirectToAction("Index") :> IActionResult
@@ -37,6 +56,7 @@ type AuctionsController (repository : IAuctionRepository) =
         if id <> auction.Id then
             this.BadRequest() :> IActionResult
         elif this.ModelState.IsValid then
+            this.SaveImage(auction)
             repository.Update(auction)
             this.TempData.["Success"] <- "Auction updated successfully."
             this.RedirectToAction("Index") :> IActionResult
