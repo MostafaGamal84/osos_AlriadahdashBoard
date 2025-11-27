@@ -1,9 +1,9 @@
-@model IEnumerable<Auction>
+﻿@model IEnumerable<Auction>
 @{
-    ViewData["Title"] = "Auctions";
+    ViewData["Title"] = "المزادات";
 }
 
-<h1 class="mb-4">Auctions</h1>
+                      <h1 class="mb-4">المزادات</h1>
 
 @if (TempData["Success"] != null)
 {
@@ -13,7 +13,7 @@
 }
 
 <div class="mb-3">
-    <a class="btn btn-primary" asp-action="Create">Create New Auction</a>
+    <a class="btn btn-primary" asp-action="Create">اضافة مزاد جديد</a>
 </div>
 
 <table class="table table-striped">
@@ -46,9 +46,9 @@
                 <td>@item.City</td>
                 <td>@(item.OpeningPrice.HasValue ? item.OpeningPrice.Value.ToString("C") : string.Empty)</td>
                 <td class="text-end">
-                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">تعديل</a>
                     <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this auction?');">Delete</button>
+                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete this auction?');">حذف</button>
                     </form>
                 </td>
             </tr>
