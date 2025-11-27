@@ -24,7 +24,6 @@ type Auction() =
     member val Content : string = null with get, set
 
     [<Display(Name = "Image URL")>]
-    [<Url>]
     member val ImagePath : string = AuctionDefaults.DefaultImageUrl with get, set
 
     [<NotMapped>]
