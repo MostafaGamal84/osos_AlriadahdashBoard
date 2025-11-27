@@ -8,6 +8,7 @@
     <Compile Include="Models/ErrorViewModel.fs" />
     <Compile Include="Models/AuctionModels.fs" />
     <Compile Include="Services/AuctionRepository.fs" />
+    <Compile Include="Controllers/AuctionApiController.fs" />
     <Compile Include="Controllers/AccountController.fs" />
     <Compile Include="Controllers/AuctionsController.fs" />
     <Compile Include="Controllers/HomeController.fs" />

@@ -33,6 +33,15 @@ module Program =
             |> ignore
 
         builder.Services.AddRazorPages() |> ignore
+        builder.Services.AddCors(fun options ->
+            options.AddPolicy("AllowAppOrigin", fun policy ->
+                policy
+                    .WithOrigins("https://osos-alriadah.com")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials()
+                |> ignore))
+        |> ignore
         builder.Services.AddScoped<IAuctionRepository, AuctionRepository>() |> ignore
 
         builder.Services
@@ -55,6 +64,7 @@ module Program =
 
         app.UseStaticFiles()
         app.UseRouting()
+        app.UseCors("AllowAppOrigin")
         app.UseAuthentication()
         app.UseAuthorization()
 
