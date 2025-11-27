@@ -13,6 +13,6 @@ type AuctionController(repository : IAuctionRepository) =
     inherit ControllerBase()
 
     [<HttpGet>]
-    member this.Get() : ActionResult<IEnumerable<Auction>> =
+    member this.Get() : IActionResult =
         let auctions = repository.GetAll()
-        ActionResult<IEnumerable<Auction>>(this.Ok(auctions))
+        this.Ok(auctions) :> IActionResult
